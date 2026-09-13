@@ -1,198 +1,138 @@
 # CollabSpace
 
-A realtime collaborative document editor: Google Docs-class authoring, presence, comments, organization workspaces, and a print-accurate canvas.
+[![Live Demo](https://img.shields.io/badge/demo-thecollabspace.vercel.app-indigo?style=for-the-badge)](https://thecollabspace.vercel.app)
+[![GitHub](https://img.shields.io/badge/github-manieshgupta%2FCollabspace-181717?style=for-the-badge&logo=github)](https://github.com/manieshgupta/Collabspace)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 
-**Live demo:** [https://collabspace-red.vercel.app](https://collabspace-red.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5-black?logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Convex](https://img.shields.io/badge/Convex-realtime_DB-EE342F)](https://convex.dev)
+[![Clerk](https://img.shields.io/badge/Clerk-auth-6C47FF)](https://clerk.com)
+[![Liveblocks](https://img.shields.io/badge/Liveblocks-CRDT-000000)](https://liveblocks.io)
+[![Vercel](https://img.shields.io/badge/Vercel-deployed-black?logo=vercel)](https://thecollabspace.vercel.app)
 
-Sign up on the landing page, then open `/documents` to create and co-edit files.
-
----
-
-## Why this exists
-
-Most “Google Docs clone” demos stop at a rich-text editor. Production document products fail or succeed on harder problems:
-
-- Who is allowed to open a room?
-- How do personal docs stay isolated from team docs?
-- How do concurrent edits converge without last-write-wins?
-- How do comments, presence, and notifications stay in the same session as the document?
-- How do you ship this as a public SaaS surface (marketing site + auth + app) instead of a login wall?
-
-CollabSpace is a full product slice of that system: public landing page, Clerk identity + organizations, Convex as the system of record for document metadata, Liveblocks CRDTs for the shared editor, and Vercel for the Next.js edge.
-
-This codebase started from a public Next.js 15 / Convex / Clerk / Liveblocks tutorial and was then productionized: public vs authenticated routing, dedicated sign-in/sign-up pages, an organization-aware authorization path, a recruiter-facing product surface, and a live Vercel deployment on Clerk Development.
+Realtime document workspace for teams that write specs, proposals, and product docs together.
 
 ---
 
-## Product surface
+## Demo
 
-| Area | What ships |
+![CollabSpace product preview](./public/blank-document.svg)
+
+> Replace the image above with a 10–15s GIF: landing page → sign up → open a document → two cursors editing the same page.
+
+---
+
+## Live Demo
+
+**https://thecollabspace.vercel.app**
+
+1. Open the landing page
+2. Sign up
+3. Create a document from the template gallery
+4. Share the URL with a teammate in the same organization to co-edit
+
+---
+
+## Problem & Motivation
+
+Remote teams still bounce between a word processor, a comment thread, and a chat window to finish one document. Edits collide, comments leave the page, and personal drafts leak into the team workspace.
+
+CollabSpace keeps identity, tenancy, live editing, and review in one product: a public marketing site, authenticated workspaces, CRDT-backed co-editing, and room-level access checks.
+
+---
+
+## Key Features
+
+- **Public product site** — unauthenticated landing page; sign-up lands in the workspace
+- **Personal and org workspaces** — personal docs stay private; org docs are scoped to the active organization
+- **Live multiplayer editing** — concurrent typing converges without last-write-wins
+- **Presence** — live cursors and avatar stack show who is in the room
+- **Inline review** — comments, threads, mentions, and an inbox on the same page
+- **Full editor** — fonts, size, color, highlight, headings, alignment, line height, lists, tasks, tables, links, images, image resize
+- **Print-accurate canvas** — page-sized layout with draggable left/right margins
+- **Templates** — blank, proposal, cover letter, letter, and resume starters
+- **Search and catalog** — paginated list, title search, rename, delete
+- **Export** — print/PDF, JSON, HTML, plain text
+- **Access control** — only the owner or a matching organization member receives a Liveblocks room token
+
+---
+
+## Tech Stack
+
+| Layer | Stack |
 | --- | --- |
-| Marketing | 3D-style SaaS landing page; unauthenticated `/`; CTAs to `/sign-up` |
-| Identity | Clerk email/social auth, session JWT, organization switcher |
-| Workspaces | Personal documents vs organization-scoped documents |
-| Catalog | Template gallery, paginated table, title search, rename, delete |
-| Editor | TipTap: fonts, size, color, highlight, alignment, headings, line height, lists, tasks, tables, links, images, image resize |
-| Layout | Page-sized canvas, dragable left/right margins, print stylesheet |
-| Collaboration | Live cursors, avatar stack, CRDT sync, offline-capable rooms |
-| Review | Inline threads, mentions, inbox notifications |
-| Export | Print / PDF, JSON, HTML, plain text |
-| Access control | Owner or same-organization member only; Liveblocks rooms authorized server-side |
+| Frontend | Next.js 15 App Router, React 19, TypeScript, Tailwind CSS, TipTap / ProseMirror |
+| Auth | Clerk (sessions, JWT template `convex`, organizations) |
+| Backend / data | Convex (schema, queries, mutations, search indexes) |
+| Collaboration | Liveblocks (CRDT document, presence, threads, inbox) |
+| Deployment | Vercel, GitHub auto-deploy on `master` |
+| Quality | ESLint (`next lint`), TypeScript (`tsc --noEmit`) |
+
+[![Next.js](https://img.shields.io/badge/-Next.js-000?logo=nextdotjs)](https://nextjs.org)
+[![React](https://img.shields.io/badge/-React-20232A?logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind](https://img.shields.io/badge/-Tailwind-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Convex](https://img.shields.io/badge/-Convex-EE342F)](https://convex.dev)
+[![Clerk](https://img.shields.io/badge/-Clerk-6C47FF)](https://clerk.com)
+[![Liveblocks](https://img.shields.io/badge/-Liveblocks-111)](https://liveblocks.io)
+[![Vercel](https://img.shields.io/badge/-Vercel-000?logo=vercel)](https://vercel.com)
 
 ---
 
 ## Architecture
 
-```text
-Browser
-  |  Next.js 15 App Router (Vercel)
-  |-- /                 public landing
-  |-- /sign-in /sign-up Clerk hosted components
-  |-- /documents        AuthGate + Convex queries
-  |-- /documents/[id]   TipTap + Liveblocks Room
-  |-- POST /api/liveblocks-auth
-        |
-        +--> Clerk session (identity, org_id)
-        +--> Convex document row (ownerId, organizationId)
-        +--> Liveblocks session.FULL_ACCESS for that room only
-        |
-Convex  --> documents table, search indexes, mutations
-Liveblocks --> CRDT document, presence, threads, inbox
-```
-
-### System of record vs system of collaboration
-
-These are intentionally separate:
-
-- **Convex** owns durable product data: title, owner, organization, initial template HTML, search.
-- **Liveblocks** owns the live document: CRDT state, cursors, comments, margin storage, notifications.
-
-That split is how real collaborative products are built. Mixing both into one database either loses realtime quality or loses queryable tenancy.
-
-### Authorization model
-
-Every privileged path checks identity **and** tenancy.
-
-1. Clerk authenticates the user and optionally attaches `org_id`.
-2. Convex mutations/queries require `ctx.auth.getUserIdentity()`.
-3. List queries are partitioned:
-   - If the user is in an organization: `by_organization_id`
-   - Else: `by_owner_id`
-   - Search uses a search index with the same filters
-4. Update/delete: owner **or** matching organization member.
-5. Liveblocks auth endpoint (`src/app/api/liveblocks-auth/route.ts`):
-   - Rejects missing Clerk session
-   - Loads the Convex document for the requested room id
-   - Allows access only if `ownerId === user.id` or `organizationId === sessionClaims.org_id`
-   - Issues a room-scoped token (`session.allow(room, session.FULL_ACCESS)`)
-
-Unauthenticated visitors never see the editor. `/` is public. `/documents/*` is wrapped in `AuthGate`, which waits for Convex auth and redirects to `/sign-in`.
-
-### Auth token bridge
-
-Convex validates Clerk JWTs using `convex/auth.config.ts`:
-
-- `domain` = Clerk Frontend API URL
-- `applicationID` = `convex` (must match the Clerk JWT template name)
-
-`ConvexProviderWithClerk` fetches that template token and sends it on Convex requests. If the template name, issuer domain, or Convex auth config drift, `useConvexAuth()` stays `isAuthenticated: false` even after a successful Clerk login. That is the first thing to debug.
-
----
-
-## Tech stack
-
-| Layer | Choice | Why |
-| --- | --- | --- |
-| UI | Next.js 15.5 App Router, React 19 RC | Server components where useful, client islands for editor/auth |
-| Styling | Tailwind CSS, Radix/shadcn | Accessible primitives without a design-system rewrite |
-| Editor | TipTap + ProseMirror | Extensible document model; Liveblocks has a first-party TipTap plugin |
-| Auth | Clerk | Hosted auth, organizations, JWT templates |
-| Data | Convex | Typed queries/mutations, indexes, auth integration, no separate ORM |
-| Collaboration | Liveblocks | CRDTs, presence, threads, inbox |
-| Hosting | Vercel | Next.js native; Clerk Development keys used for this demo |
-
----
-
-## Repository map
+Metadata lives in Convex. The live document lives in Liveblocks. Clerk issues identity. Next.js authorizes the room before any CRDT session starts.
 
 ```text
-src/app/(home)/page.tsx              Public landing page
-src/app/sign-in, src/app/sign-up     Clerk path routing
-src/app/documents/page.tsx           Document catalog
-src/app/documents/layout.tsx         AuthGate
-src/app/documents/[documentId]/      Editor, toolbar, ruler, room, comments
-src/app/api/liveblocks-auth/route.ts Room authorization
-src/components/auth-gate.tsx         Convex auth loading + redirect
-src/middleware.ts                    clerkMiddleware
-convex/schema.ts                     documents table + indexes
-convex/documents.ts                  queries/mutations + tenancy
-convex/auth.config.ts                Clerk issuer for Convex
-liveblocks.config.ts                 Presence / storage typing
+                    ┌─────────────────────────────────────┐
+                    │           Next.js 15 (Vercel)       │
+                    │  /  public landing                  │
+                    │  /sign-in  /sign-up                 │
+                    │  /documents          AuthGate       │
+                    │  /documents/[id]     TipTap editor  │
+                    │  POST /api/liveblocks-auth          │
+                    └──────────────┬──────────────────────┘
+           ┌───────────────────────┼───────────────────────┐
+           ▼                       ▼                       ▼
+     ┌──────────┐           ┌──────────┐           ┌────────────┐
+     │  Clerk   │  JWT      │  Convex  │  owner/   │ Liveblocks │
+     │ identity │  template │  docs +  │  org_id   │ CRDT room  │
+     │ + orgs   │  "convex" │  search  │  check    │ presence   │
+     └──────────┘           └──────────┘           └────────────┘
 ```
+
+**Request path for an editor session**
+
+1. Clerk authenticates the user and attaches `org_id` when an organization is active.
+2. Convex lists and mutates documents filtered by `ownerId` or `organizationId`.
+3. `/api/liveblocks-auth` loads the Convex row for the requested room, allows access only if the caller is the owner or a member of that organization, then issues `session.FULL_ACCESS` for that room only.
 
 ---
 
-## Local setup
+## Technical Highlights / Challenges Solved
 
-### Prerequisites
+- **Split stores on purpose.** Convex holds title, owner, organization, and search. Liveblocks holds the CRDT body, cursors, threads, and margins. One store would either lose queryable tenancy or lose realtime quality.
+- **Room tokens, not UI gates.** `src/app/api/liveblocks-auth/route.ts` rejects missing sessions, missing documents, and cross-tenant access before Liveblocks ever opens a socket.
+- **Org-aware queries.** Document list and search use `by_owner_id`, `by_organization_id`, and a title search index with the same filters, so switching Clerk organizations changes the catalog without a second product model.
+- **Public vs app shell.** `/` is public. `/documents/*` waits on Convex auth and redirects to `/sign-in`. Marketing traffic never hits the editor bundle as a login wall.
+- **Ship path.** Next.js 15.5.25 on Vercel, Clerk Development keys, GitHub `master` auto-deploy. Production Clerk is deferred until a domain we control exists; `*.vercel.app` cannot host Clerk Production DNS.
 
-- Node.js 18+
-- npm (use `--legacy-peer-deps` because React 19 is still RC for some peer ranges)
-- Free accounts: [Clerk](https://dashboard.clerk.com), [Convex](https://dashboard.convex.dev), [Liveblocks](https://liveblocks.io)
+---
 
-### 1. Install
+## Installation & Setup
+
+**Prerequisites:** Node.js 18+, npm, free accounts on [Clerk](https://dashboard.clerk.com), [Convex](https://dashboard.convex.dev), and [Liveblocks](https://liveblocks.io).
 
 ```bash
-git clone https://github.com/manieshgupta/collabspace.git
-cd collabspace
+git clone https://github.com/manieshgupta/Collabspace.git
+cd Collabspace
 npm install --legacy-peer-deps
 cp .env.example .env.local
 ```
 
-### 2. Clerk
-
-1. Create an application (Email + Google is enough).
-2. Copy **Publishable key** and **Secret key** into `.env.local`.
-3. **Configure → JWT templates → New → Convex**. Name the template exactly `convex`.
-4. Copy the Frontend API URL (`https://verb-noun-00.clerk.accounts.dev`).
-5. Put that URL in `convex/auth.config.ts` as `providers[0].domain`.
-6. Optional: **Configure → Paths**
-   - Sign-in: `/sign-in`
-   - Sign-up: `/sign-up`
-   - After sign-in / sign-up: `/documents`
-
-Development instances do not require a custom domain.
-
-### 3. Liveblocks
-
-Create a project, copy the secret key (`sk_dev_...`) into `LIVEBLOCKS_SECRET_KEY`.
-
-### 4. Convex
-
-```bash
-npx convex login
-npx convex dev
-```
-
-`npx convex dev` writes `CONVEX_DEPLOYMENT` and `NEXT_PUBLIC_CONVEX_URL` into `.env.local` and pushes `convex/` (schema, functions, auth config).
-
-Keep that process running while you develop.
-
-### 5. Next.js
-
-In a second terminal:
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
----
-
-## Environment variables
-
-`.env.example` is the contract. Never commit `.env.local`.
+Fill `.env.local`:
 
 ```bash
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
@@ -201,78 +141,122 @@ NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/documents
 NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/documents
-
 LIVEBLOCKS_SECRET_KEY=
-
 CONVEX_DEPLOYMENT=
 NEXT_PUBLIC_CONVEX_URL=
 ```
 
-`CONVEX_DEPLOYMENT` and `NEXT_PUBLIC_CONVEX_URL` are generated by `npx convex dev`.
+**Clerk**
 
----
+1. Create an app. Copy the publishable and secret keys.
+2. Configure → JWT templates → New → Convex. Name it exactly `convex`.
+3. Set `convex/auth.config.ts` `domain` to your Clerk Frontend API URL (`https://verb-noun-00.clerk.accounts.dev`).
 
-## Scripts
+**Liveblocks**
+
+Create a project. Copy `sk_dev_...` into `LIVEBLOCKS_SECRET_KEY`.
+
+**Convex + Next.js** (two terminals)
+
+```bash
+npx convex login
+npx convex dev
+```
 
 ```bash
 npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). `npx convex dev` writes `CONVEX_DEPLOYMENT` and `NEXT_PUBLIC_CONVEX_URL`.
+
+`--legacy-peer-deps` is required while some packages still peer-depend on React 18.
+
+---
+
+## Usage
+
+```bash
+# local app
+npm run dev
+
+# Convex functions + schema push (keep running)
+npx convex dev
+
+# production build
 npm run build
 npm run start
+```
+
+After sign-up you land on `/documents`. Pick a template or blank doc. The editor URL is `/documents/[documentId]`. Organization switcher in the navbar scopes the catalog to personal vs team docs.
+
+---
+
+## Testing
+
+```bash
 npm run lint
-npx convex dev
 npx tsc --noEmit
 ```
 
-Install note: `npm install --legacy-peer-deps` is required until every dependency declares React 19.
+No automated unit/e2e suite yet. Highest-value next tests: Convex tenancy mutations (owner vs org member vs stranger) and the Liveblocks auth route (401 vs room token).
 
 ---
 
-## Deploy (Clerk Development)
+## Folder / File Structure
 
-This demo is deployed on **Clerk Development** keys. That is valid for a portfolio: Clerk Production requires a domain you control (Vercel `*.vercel.app` cannot be a Clerk production domain).
-
-### Vercel
-
-1. Install command: `npm install --legacy-peer-deps`
-2. Build command: `next build` (or `npx convex deploy --cmd 'npm run build'` if you use a Convex production deployment)
-3. Set the same env vars as `.env.example` (use `pk_test_` / `sk_test_` / `sk_dev_`)
-4. After the first URL exists, add it in Clerk Development under allowed origins if the dashboard asks
-
-Production URL for this repo: [https://collabspace-red.vercel.app](https://collabspace-red.vercel.app)
-
-### Convex auth after clone
-
-If you fork this repo, replace `convex/auth.config.ts` `domain` with **your** Clerk Frontend API URL, then run `npx convex dev` or `npx convex deploy`. Stale issuer domains are the most common “signed in to Clerk, empty app” bug.
-
----
-
-## Operational notes
-
-**Honest limitations (what a senior reviewer will ask)**
-
-- Clerk Development keys are used on the public demo. Do not treat this as a compliance-ready production tenant.
-- `getById` does not re-check membership before returning a document to the page; the Liveblocks auth route and mutations do. Tightening the query is a clean follow-up.
-- Document body lives in Liveblocks, not Convex. Backup/export of CRDT history is a Liveblocks concern.
-- React 19 is still an RC in `package.json`; Next.js was bumped to 15.5.25 to clear Vercel’s vulnerable-version gate.
-- There is no custom test suite yet. Highest-value tests would be Convex tenancy mutations and the Liveblocks auth route.
-
-**What I would do next**
-
-- Move `getById` behind the same owner/org check
-- Add Playwright for sign-up → create doc → second user denied
-- Convex production deploy key on Vercel build
-- Clerk Production only after a real domain + Google OAuth client
-- Rate-limit the Liveblocks auth route
-- Persist audit fields (`updatedAt`, last editor) on Convex
+```text
+Collabspace/
+├── convex/
+│   ├── auth.config.ts      Clerk issuer for Convex JWTs
+│   ├── documents.ts        queries / mutations / tenancy
+│   └── schema.ts           documents table + indexes
+├── src/
+│   ├── app/
+│   │   ├── (home)/page.tsx           landing
+│   │   ├── sign-in/  sign-up/        Clerk routes
+│   │   ├── documents/page.tsx        catalog
+│   │   ├── documents/layout.tsx      AuthGate
+│   │   ├── documents/[documentId]/   editor, room, toolbar, ruler
+│   │   └── api/liveblocks-auth/      room authorization
+│   ├── components/auth-gate.tsx
+│   └── middleware.ts
+├── liveblocks.config.ts
+├── vercel.json
+└── .env.example
+```
 
 ---
 
-## Resume talking points
+## What I Learned
 
-- Split **metadata** (Convex) from **collaborative state** (Liveblocks CRDTs) instead of forcing one store to do both.
-- Authorization is enforced on the **room token**, not only in the UI.
-- Organizations are a first-class tenancy key, not a cosmetic Clerk widget.
-- Public marketing route is separated from the authenticated app shell.
-- Deployment is real: Vercel + Clerk Development + live Convex backend.
+Realtime editing is the visible feature. The hard part is tenancy: who can open the room, how personal and org catalogs stay partitioned, and how the auth token for Convex stays in sync with the Clerk JWT template. Splitting metadata from CRDT state made both of those problems smaller.
 
-If you only have 30 seconds in an interview: open the demo, sign in, create a document, and walk through `src/app/api/liveblocks-auth/route.ts` and `convex/documents.ts`.
+I also learned that a public landing page plus a gated app is a product decision, not a CSS decision — routing and AuthGate had to change before the marketing page could exist.
+
+---
+
+## Roadmap / Future Improvements
+
+- Playwright flow: sign up → create doc → second user in another org is denied
+- Convex production deploy key on the Vercel build
+- Audit fields on documents (`updatedAt`, last editor)
+- Rate-limit `/api/liveblocks-auth`
+- Custom domain + Clerk Production when DNS is available
+- Broader export (Markdown) and share-by-link with expiry
+
+---
+
+## License
+
+MIT. See [LICENSE](LICENSE) if present; otherwise all rights reserved by the author until a LICENSE file is added.
+
+---
+
+## Contact / Links
+
+- **Live demo:** [https://thecollabspace.vercel.app](https://thecollabspace.vercel.app)
+- **GitHub:** [https://github.com/manieshgupta/Collabspace](https://github.com/manieshgupta/Collabspace)
+- **Portfolio:** [https://manieshgupta.netlify.app/](https://manieshgupta.netlify.app/)
+- **LinkedIn:** [https://linkedin.com/in/manieshgupta](https://linkedin.com/in/manieshgupta)
+- **Resume:** [PDF](https://drive.google.com/file/d/1jb2a152z-ozK-pt1PfGIaFJNF7jnvdIR/view?usp=sharing)
+- **Email:** [manieshgupta333@gmail.com](mailto:manieshgupta333@gmail.com)
