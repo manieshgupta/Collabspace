@@ -20,8 +20,6 @@ Realtime document workspace for teams that write specs, proposals, and product d
 
 ![CollabSpace product preview](./public/blank-document.svg)
 
-> Replace the image above with a 10–15s GIF: landing page → sign up → open a document → two cursors editing the same page.
-
 ---
 
 ## Live Demo
