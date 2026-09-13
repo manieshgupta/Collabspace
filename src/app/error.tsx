@@ -41,7 +41,7 @@ const ErrorPage = ({
           variant="ghost"
           className="font-medium"
         >
-          <Link href="/">
+          <Link href="/documents">
             Go back
           </Link>
         </Button>

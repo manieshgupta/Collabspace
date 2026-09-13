@@ -118,8 +118,8 @@ export const Navbar = ({ data }: NavbarProps) => {
   return (
     <nav className="flex items-center justify-between">
       <div className="flex gap-2 items-center">
-        <Link href="/">
-          <Image src="/logo.svg" alt="Logo" width={36} height={36} />
+        <Link href="/documents">
+          <Image src="/logo.svg" alt="CollabSpace" width={36} height={36} />
         </Link>
         <div className="flex flex-col">
           <DocumentInput title={data.title} id={data._id} />
@@ -266,12 +266,12 @@ export const Navbar = ({ data }: NavbarProps) => {
         <Avatars />
         <Inbox />
         <OrganizationSwitcher
-          afterCreateOrganizationUrl="/"
-          afterLeaveOrganizationUrl="/"
-          afterSelectOrganizationUrl="/"
-          afterSelectPersonalUrl="/"
+          afterCreateOrganizationUrl="/documents"
+          afterLeaveOrganizationUrl="/documents"
+          afterSelectOrganizationUrl="/documents"
+          afterSelectPersonalUrl="/documents"
         />
-        <UserButton />
+        <UserButton afterSignOutUrl="/" />
       </div>
     </nav>
   );

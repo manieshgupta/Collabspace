@@ -287,3 +287,71 @@ body {
 div[data-radix-popper-content-wrapper] {
   z-index: 50 !important;
 }
+
+@keyframes landing-float {
+  0%, 100% { transform: translateY(0px) rotateX(12deg) rotateY(-18deg) rotateZ(2deg); }
+  50% { transform: translateY(-18px) rotateX(8deg) rotateY(-12deg) rotateZ(-1deg); }
+}
+
+@keyframes landing-orbit {
+  from { transform: rotate(0deg) translateX(118px) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(118px) rotate(-360deg); }
+}
+
+@keyframes landing-pulse {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.08); }
+}
+
+@keyframes landing-shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes landing-rise {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes landing-cursor {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(18px, 12px); }
+}
+
+.landing-float {
+  animation: landing-float 8s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.landing-orbit {
+  animation: landing-orbit 14s linear infinite;
+}
+
+.landing-pulse {
+  animation: landing-pulse 4s ease-in-out infinite;
+}
+
+.landing-shimmer {
+  background-size: 200% 200%;
+  animation: landing-shimmer 8s linear infinite;
+}
+
+.landing-rise {
+  animation: landing-rise 0.8s ease-out both;
+}
+
+.landing-cursor {
+  animation: landing-cursor 5s ease-in-out infinite;
+}
+
+.landing-stage {
+  perspective: 1400px;
+}
+
+.landing-grid {
+  background-image:
+    linear-gradient(rgba(99, 102, 241, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.08) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 20%, transparent 75%);
+}
