@@ -23,8 +23,8 @@ if (cluster.isPrimary) {
     console.log(`Worker ${newWorker.process.pid} started`);
   });
 } else {
-  const client = createClient();
-  const pubClient = createClient();
+  const client = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
+  const pubClient = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
 
   async function processSubmission(submission: any) {
     const { code, language, roomId, submissionId, input } =

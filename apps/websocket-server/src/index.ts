@@ -4,7 +4,7 @@ import { createClient } from "redis";
 
 const server = http.createServer();
 const wss = new WebSocketServer({ server });
-const pubSubClient = createClient();
+const pubSubClient = createClient({ url: process.env.REDIS_URL || 'redis://localhost:6379' });
 
 // Storage for rooms and their users
 const rooms: any = {};

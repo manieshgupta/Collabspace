@@ -1,1 +1,1 @@
-export const IP_ADDRESS = "localhost"
+export const IP_ADDRESS = import.meta.env.VITE_SERVER_IP || "localhost"
