@@ -173,6 +173,17 @@ The app is designed for deployment on a VPS (e.g. AWS EC2) where Docker is avail
 
 ---
 
-## 📄 License
+## License
 
-MIT
+MIT. See [LICENSE](LICENSE) if present; otherwise all rights reserved by the author until a LICENSE file is added.
+
+---
+
+## Contact / Links
+
+- **Live demo:** [https://thecollabspace.vercel.app](https://thecollabspace.vercel.app)
+- **GitHub:** [https://github.com/manieshgupta/Collabspace](https://github.com/manieshgupta/Collabspace)
+- **Portfolio:** [https://manieshgupta.netlify.app/](https://manieshgupta.netlify.app/)
+- **LinkedIn:** [https://linkedin.com/in/manieshgupta](https://linkedin.com/in/manieshgupta)
+- **Resume:** [PDF](https://drive.google.com/file/d/1jb2a152z-ozK-pt1PfGIaFJNF7jnvdIR/view?usp=sharing)
+- **Email:** [manieshgupta333@gmail.com](mailto:manieshgupta333@gmail.com)
