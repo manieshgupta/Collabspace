@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import MonacoEditor from '@monaco-editor/react';
 import { userAtom } from "../atoms/userAtom";
 import { useRecoilState } from "recoil";
@@ -6,7 +6,7 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai"; // Import spinner ic
 import { socketAtom } from "../atoms/socketAtom";
 import { useNavigate, useParams } from "react-router-dom";
 import { connectedUsersAtom } from "../atoms/connectedUsersAtom";
-import { IP_ADDRESS } from "../Globle";
+import { EXPRESS_SERVER_URL } from "../Globle";
 
 const CodeEditor: React.FC = () => {
   const [code, setCode] = useState<any>("// Write your code here...");
@@ -164,7 +164,7 @@ const CodeEditor: React.FC = () => {
 
     socket?.send(user?.id ? user.id : "");
 
-    const res = await fetch(`http://${IP_ADDRESS}:3000/submit`, {
+    const res = await fetch(`${EXPRESS_SERVER_URL}/submit`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -239,7 +239,7 @@ const CodeEditor: React.FC = () => {
       // });
 
       // handle code change multiple user
-      editor.onDidChangeModelContent((event: any) => {
+      editor.onDidChangeModelContent(() => {
         console.log("Code Updated:", editor.getValue());
         setCode(editor.getValue());
         socket?.send(
