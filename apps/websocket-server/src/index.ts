@@ -18,7 +18,7 @@ function generateRoomId() {
   return id;
 }
 
-async function process() {
+async function initWebSocket() {
   pubSubClient.on("error", (err) =>
     console.log("Redis PubSub Client Error", err)
   );
@@ -236,7 +236,7 @@ async function process() {
 async function main() {
   try {
     await pubSubClient.connect();
-    await process();
+    await initWebSocket();
     console.log("Redis Client Connected");
   } catch (error) {
     console.log("Failed to connect to Redis", error);
