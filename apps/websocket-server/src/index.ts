@@ -207,17 +207,26 @@ async function initWebSocket() {
 
     ws.on("close", () => {
       // remove user from room
-      rooms[roomId] = rooms[roomId].filter(
-        (user: any) => user.userId !== userId
-      );
+      if (rooms[roomId]) {
+        rooms[roomId] = rooms[roomId].filter(
+          (user: any) => user.userId !== userId
+        );
 
-      // send updated users list to all users in the room
-      rooms[roomId].forEach((user: any) => {
-        user.ws.send(JSON.stringify({ type: "users", users }));
-      });
-      if (rooms[roomId].length === 0) {
-        delete rooms[roomId];
-        pubSubClient.unsubscribe(roomId);
+        // send updated users list to all remaining users in the room
+        const remainingUsers = rooms[roomId].map((user: any) => ({
+          id: user.userId,
+          name: user.name,
+        }));
+        rooms[roomId].forEach((user: any) => {
+          if (user.ws.readyState === 1) {
+            user.ws.send(JSON.stringify({ type: "users", users: remainingUsers }));
+          }
+        });
+
+        if (rooms[roomId].length === 0) {
+          delete rooms[roomId];
+          pubSubClient.unsubscribe(roomId);
+        }
       }
 
       console.log("all room", rooms);

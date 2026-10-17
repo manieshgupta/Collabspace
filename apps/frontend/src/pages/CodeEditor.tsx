@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MonacoEditor from '@monaco-editor/react';
 import { userAtom } from "../atoms/userAtom";
 import { useRecoilState } from "recoil";
@@ -19,64 +19,108 @@ const CodeEditor: React.FC = () => {
   const [user, setUser] = useRecoilState(userAtom);
   const navigate = useNavigate();
 
+  // Editor and remote change synchronization refs
+  const editorRef = useRef<any>(null);
+  const isRemoteChange = useRef<boolean>(false);
+  const lastReceivedCode = useRef<string>("// Write your code here...");
 
+  // State refs to keep WebSocket handlers stable without re-binding on each keystroke
+  const codeRef = useRef(code);
+  const inputRef = useRef(input);
+  const languageRef = useRef(language);
+  const currentButtonStateRef = useRef(currentButtonState);
+  const isLoadingRef = useRef(isLoading);
 
-  // multipleyer state
+  useEffect(() => {
+    codeRef.current = code;
+  }, [code]);
+
+  useEffect(() => {
+    inputRef.current = input;
+  }, [input]);
+
+  useEffect(() => {
+    languageRef.current = language;
+  }, [language]);
+
+  useEffect(() => {
+    currentButtonStateRef.current = currentButtonState;
+  }, [currentButtonState]);
+
+  useEffect(() => {
+    isLoadingRef.current = isLoading;
+  }, [isLoading]);
+
+  // multiplayer state
   const [connectedUsers, setConnectedUsers] = useRecoilState<any[]>(connectedUsersAtom);
   const parms = useParams();
 
   // WebSocket connection logic
   useEffect(() => {
-
     if (!socket) {
       navigate("/" + parms.roomId);
-    }
-    else {
-      // request to get all users on start
-      socket.send(
-        JSON.stringify({
-          type: "requestToGetUsers",
-          userId: user.id
-        })
-      );
+    } else {
+      if (socket.readyState === WebSocket.OPEN) {
+        // request to get all users on start
+        socket.send(
+          JSON.stringify({
+            type: "requestToGetUsers",
+            userId: user.id
+          })
+        );
 
+        // request to get all data on start
+        socket.send(
+          JSON.stringify({
+            type: "requestForAllData",
+          })
+        );
+      }
 
-      // request to get all data on start
-      socket.send(
-        JSON.stringify({
-          type: "requestForAllData",
-        })
-      );
       socket.onclose = () => {
         console.log("Connection closed");
         setUser({
           id: "",
           name: "",
           roomId: "",
-        })
+        });
         setSocket(null);
-      }
+      };
     }
     return () => {
       socket?.close();
     };
   }, []);
 
-
   useEffect(() => {
     if (!socket) {
       navigate("/" + parms.roomId);
-    }
-    else {
+    } else {
       socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         // on change of user
         if (data.type === "users") {
           setConnectedUsers(data.users);
         }
-        // on change of code
+
+        // on change of code from another user
         if (data.type === "code") {
+          if (editorRef.current && editorRef.current.getValue() === data.code) {
+            return;
+          }
+          lastReceivedCode.current = data.code;
+          isRemoteChange.current = true;
           setCode(data.code);
+          if (editorRef.current) {
+            const position = editorRef.current.getPosition();
+            editorRef.current.setValue(data.code);
+            if (position) {
+              editorRef.current.setPosition(position);
+            }
+          }
+          setTimeout(() => {
+            isRemoteChange.current = false;
+          }, 0);
         }
 
         // on change of input
@@ -103,55 +147,52 @@ const CodeEditor: React.FC = () => {
 
         // on receive cursor position
         if (data.type === "cursorPosition") {
-          // Update cursor position for the user
-          const updatedUsers = connectedUsers.map((user) => {
-            if (user.id === data.userId) {
-              return { ...user, cursorPosition: data.cursorPosition };
-            }
-            return user;
-          });
-          setConnectedUsers(updatedUsers);
-        }
-
-        // send all data to new user on join  
-        if (data.type === "requestForAllData") {
-          socket?.send(
-            JSON.stringify({
-              type: "allData",
-              code: code,
-              input: input,
-              language: language,
-              currentButtonState: currentButtonState,
-              isLoading: isLoading,
-              userId: data.userId
+          setConnectedUsers((prevUsers) =>
+            prevUsers.map((u) => {
+              if (u.id === data.userId) {
+                return { ...u, cursorPosition: data.cursorPosition };
+              }
+              return u;
             })
           );
         }
 
+        // send all data to new user on join  
+        if (data.type === "requestForAllData") {
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(
+              JSON.stringify({
+                type: "allData",
+                code: editorRef.current ? editorRef.current.getValue() : codeRef.current,
+                input: inputRef.current,
+                language: languageRef.current,
+                currentButtonState: currentButtonStateRef.current,
+                isLoading: isLoadingRef.current,
+                userId: data.userId
+              })
+            );
+          }
+        }
+
         // on receive all data
         if (data.type === "allData") {
+          lastReceivedCode.current = data.code;
+          isRemoteChange.current = true;
           setCode(data.code);
           setInput(data.input);
           setLanguage(data.language);
           setCurrentButtonState(data.currentButtonState);
           setIsLoading(data.isLoading);
+          if (editorRef.current && editorRef.current.getValue() !== data.code) {
+            editorRef.current.setValue(data.code);
+          }
+          setTimeout(() => {
+            isRemoteChange.current = false;
+          }, 0);
         }
-
-        // // on recive cursor poisition
-        // if (data.type === "cursorPosition") {
-        //   const updatedUsers = connectedUsers.map((user) => {
-        //     if (user.id === data.userId) {
-        //       return { ...user, cursorPosition: data.cursorPosition };
-        //     }
-        //     return user;
-        //   });
-        //   console.log("updatedUsers", updatedUsers);
-
-        //   setConnectedUsers(updatedUsers);
-        // }
       };
     }
-  }, [code, input, language, currentButtonState, isLoading]);
+  }, [socket]);
 
   const handleSubmit = async () => {
     handleButtonStatus("Submitting...", true);
@@ -162,7 +203,9 @@ const CodeEditor: React.FC = () => {
       input
     };
 
-    socket?.send(user?.id ? user.id : "");
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(user?.id ? user.id : "");
+    }
 
     const res = await fetch(`${EXPRESS_SERVER_URL}/submit`, {
       method: "POST",
@@ -186,76 +229,74 @@ const CodeEditor: React.FC = () => {
   // handle input change multiple user
   const handleInputChange = (e: any) => {
     setInput(e.target.value);
-    socket?.send(
-      JSON.stringify({
-        type: "input",
-        input: e.target.value,
-        roomId: user.roomId
-      })
-    );
-  }
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          type: "input",
+          input: e.target.value,
+          roomId: user.roomId
+        })
+      );
+    }
+  };
 
   // handle language change multiple user
   const handleLanguageChange = (value: any) => {
     setLanguage(value);
-    socket?.send(
-      JSON.stringify({
-        type: "language",
-        language: value,
-        roomId: user.roomId
-      })
-    );
-  }
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          type: "language",
+          language: value,
+          roomId: user.roomId
+        })
+      );
+    }
+  };
 
   // handle submit button status multiple user
   const handleButtonStatus = (value: any, isLoading: any) => {
     setCurrentButtonState(value);
     setIsLoading(isLoading);
-    socket?.send(
-      JSON.stringify({
-        type: "submitBtnStatus",
-        value: value,
-        isLoading: isLoading,
-        roomId: user.roomId
-      })
-    );
-  }
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          type: "submitBtnStatus",
+          value: value,
+          isLoading: isLoading,
+          roomId: user.roomId
+        })
+      );
+    }
+  };
 
-  const handleEditorDidMount = (editor: any, monaco: any) => {
-    console.log("editor", editor);
-    console.log("monaco", monaco);
+  const handleEditorDidMount = (editor: any) => {
+    editorRef.current = editor;
 
     if (editor) {
-      // editor.onDidChangeCursorPosition((event: any) => {
-      //   const position = editor.getPosition();
-      //   console.log("Cursor Position:", position);
-      //   socket?.send(
-      //     JSON.stringify({
-      //       type: "cursorPosition",
-      //       cursorPosition: position,
-      //       userId: user.id
-      //     })
-      //   );
-      // });
-
       // handle code change multiple user
       editor.onDidChangeModelContent(() => {
-        console.log("Code Updated:", editor.getValue());
-        setCode(editor.getValue());
-        socket?.send(
-          JSON.stringify({
-            type: "code",
-            code: editor.getValue(),
-            roomId: user.roomId
-          })
-        );
-      });
+        // If this update was applied remotely from another user, do not echo back
+        if (isRemoteChange.current) {
+          return;
+        }
+        const currentVal = editor.getValue();
+        // If content is identical to last received remote code, skip sending
+        if (currentVal === lastReceivedCode.current) {
+          return;
+        }
 
-      // editor.onDidChangeCursorSelection((event: any) => {
-      //   const selection = editor.getSelection();
-      //   const selectedText = editor.getModel().getValueInRange(selection);
-      //   console.log("Selected Code:", selectedText);
-      // });
+        setCode(currentVal);
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(
+            JSON.stringify({
+              type: "code",
+              code: currentVal,
+              roomId: user.roomId
+            })
+          );
+        }
+      });
     }
   };
 
