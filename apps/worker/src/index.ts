@@ -87,12 +87,17 @@ sh -c "g++ /usr/src/app/userCode.cpp -o /usr/src/app/a.out && /usr/src/app/a.out
           break;
 
         case "java":
-          codeFilePath = path.join(absoluteCodeDir, "UserCode.java");
+          const publicClassMatch = code.match(/public\s+(?:final\s+)?class\s+([A-Za-z0-9_$]+)/);
+          const mainClassMatch = code.match(/class\s+([A-Za-z0-9_$]+)[\s\S]*?public\s+static\s+void\s+main/);
+          const anyClassMatch = code.match(/(?:final\s+)?class\s+([A-Za-z0-9_$]+)/);
+          const javaClassName = publicClassMatch?.[1] || mainClassMatch?.[1] || anyClassMatch?.[1] || "UserCode";
+
+          codeFilePath = path.join(absoluteCodeDir, `${javaClassName}.java`);
           await fs.writeFile(codeFilePath, code);
           dockerCommand = `docker run --rm --memory="256m" --cpus="1.0" --pids-limit 100 -v "${absoluteCodeDir.replace(
             /\\/g,
             "/"
-          )}:/usr/src/app" eclipse-temurin:17 sh -c "javac /usr/src/app/UserCode.java && java -cp /usr/src/app UserCode < /usr/src/app/input.txt"`;
+          )}:/usr/src/app" eclipse-temurin:17 sh -c "javac /usr/src/app/${javaClassName}.java && java -cp /usr/src/app ${javaClassName} < /usr/src/app/input.txt"`;
           break;
 
         case "go":
